@@ -1,8 +1,8 @@
 #include "Renderer.h"
 #include <iostream>
 
-Renderer::Renderer(int width, int height)
-	: screenWidth(width), screenHeight(height)
+Renderer::Renderer(int width, int height, Shader sh)
+	: screenWidth(width), screenHeight(height), shader(sh)
 {
 	initialize();
 	initializeWindow(screenWidth, screenHeight);
@@ -48,6 +48,23 @@ void Renderer::initializeGlad()
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return;
 	}
+}
+
+void Renderer::setupVertexArrays()
+{
+	glGenBuffers(1, &VBO_X);
+	glGenBuffers(1, &VBO_Y);
+	glGenVertexArrays(1, &VAO);
+
+	glBindBuffer(GL_VERTEX_ARRAY, VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_X);
+	glVertexAttribPointer(0, 1, GL_FLOAT, GL_FALSE, sizeof(float), (const void*)0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_Y);
+	glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(float), (const void*)0);
+	glEnableVertexAttribArray(1);
 }
 
 void Renderer::render()
