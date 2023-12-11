@@ -1,21 +1,11 @@
 #include "BoidCellMap.h"
 #include <algorithm>
 
-BoidCellMap::BoidCellMap()
-	: size(0)
-{
-	// dummy data
-	data.push_back(MapCell(0, 0));
-}
+BoidCellMap::BoidCellMap() = default;
 
 BoidCellMap::BoidCellMap(int boidsNumber)
-	: size(boidsNumber)
-{
-	for (int i = 0; i < size; i++)
-	{
-		data.push_back(MapCell(0, 0));
-	}
-}
+	: size(boidsNumber), data(boidsNumber, MapCell(0, 0))
+{ }
 
 void BoidCellMap::sortMap()
 {

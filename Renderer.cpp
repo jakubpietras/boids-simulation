@@ -1,16 +1,31 @@
 #include "Renderer.h"
 #include <iostream>
 
-Renderer::Renderer(int screenWidth, int screenHeight)
+Renderer::Renderer(int width, int height)
+	: screenWidth(width), screenHeight(height)
 {
-	glfwInit();
+	initialize();
+	initializeWindow(screenWidth, screenHeight);
+	initializeGlad();
+	glViewport(0, 0, screenWidth, screenHeight);
+}
+
+Renderer::~Renderer()
+{
+	glfwTerminate();
+}
+
+void Renderer::initialize()
+{
+	if (!glfwInit())
+	{
+		std::cerr << "Failed to initialize GLFW" << std::endl;
+		return;
+	}
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-	initializeWindow(screenWidth, screenHeight);
-	gladLoader();
-	glViewport(0, 0, screenWidth, screenHeight);
 }
 
 void Renderer::initializeWindow(int screenWidth, int screenHeight)
@@ -26,7 +41,7 @@ void Renderer::initializeWindow(int screenWidth, int screenHeight)
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 }
 
-void Renderer::gladLoader()
+void Renderer::initializeGlad()
 {
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{

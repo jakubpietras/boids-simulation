@@ -1,14 +1,14 @@
 #pragma once
+#include <vector>
 
 struct Boids
 {
 	int boidsNumber;
-	float* positionX;
-	float* positionY;
-	float* velocityX;
-	float* velocityY;
+	std::vector<float> positionX;
+	std::vector<float> positionY;
+	std::vector<float> velocityX;
+	std::vector<float> velocityY;
 
 	Boids(int boidsNumber);
-	~Boids();
 	void randomizeParameters(int screenWidth, int screenHeight);
 };

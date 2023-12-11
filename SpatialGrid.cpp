@@ -19,7 +19,7 @@ int SpatialGrid::hashBoid(Boids& boids, int boidId)
 	int cellIdX = static_cast<int>(floor(boids.positionX[boidId] / cellSize));
 	int cellIdY = static_cast<int>(floor(boids.positionY[boidId] / cellSize));
 	//// Debugging output
-	//std::cout << "Boid: " << boidId << ", Position: (" << boids.positionX[boidId] << ", " << boids.positionY[boidId] << "), Cell: (" << cellIdX << ", " << cellIdY << ")\n";
+	std::cout << "Boid: " << boidId << ", Position: (" << boids.positionX[boidId] << ", " << boids.positionY[boidId] << "), Cell: (" << cellIdX << ", " << cellIdY << ")\n";
 
 	return cellIdY * cellsNumberX + cellIdX;
 }

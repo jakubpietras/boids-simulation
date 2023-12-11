@@ -9,7 +9,7 @@
 
 int main(void)
 {
-	const int boidsNumber = 100;
+	const int boidsNumber = 50;
 	const int nbhoodRadius = 25;
 	const int screenWidth = 800;
 	const int screenHeight = 600;
@@ -24,7 +24,7 @@ int main(void)
 	grid.updateBoidCellMap(boids, boidsNumber);
 
 
-	auto list = grid.getBoidsFromRegion(grid.hashBoid(boids, 4));
+	auto list = grid.getBoidsFromRegion(grid.hashBoid(boids, 2));
 	auto stop = std::chrono::high_resolution_clock::now();
 	for(auto item : list)
 	{

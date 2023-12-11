@@ -4,21 +4,11 @@
 
 
 Boids::Boids(int boidsNumber)
-	: boidsNumber(boidsNumber)
-{
-	positionX = new float[boidsNumber];
-	positionY = new float[boidsNumber];
-	velocityX = new float[boidsNumber];
-	velocityY = new float[boidsNumber];
-}
-
-Boids::~Boids()
-{
-	delete[] positionX;
-	delete[] positionY;
-	delete[] velocityX;
-	delete[] velocityY;
-}
+    : boidsNumber(boidsNumber),
+    positionX(boidsNumber, 0.0f),
+    positionY(boidsNumber, 0.0f),
+    velocityX(boidsNumber, 0.0f),
+    velocityY(boidsNumber, 0.0f) { }
 
 void Boids::randomizeParameters(int screenWidth, int screenHeight)
 {
