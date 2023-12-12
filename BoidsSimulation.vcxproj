@@ -137,13 +137,19 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="SpatialGrid.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoidCellMap.h" />
     <ClInclude Include="Boids.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="SpatialGrid.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="boid.frag" />
+    <None Include="boid.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

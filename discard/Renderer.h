@@ -13,19 +13,18 @@ private:
 	GLFWwindow* window;
 	int screenWidth, screenHeight;
 	GLuint VBO_X, VBO_Y, VAO;
+	Shader shader;
 
 public:
-	Renderer(int width, int height);
+	Renderer(int width, int height, Shader sh);
 	~Renderer();
 	// Initializers
 	void initialize();
 	void initializeWindow(int screenWidth, int screenHeight);
 	void initializeGlad();
-	//void setupVertexArrays(Boids& boids);
+	void setupVertexArrays(Boids& boids);
 
-	glm::mat4 createModelMatrix(float transX, float transY, float angle, float scale);
-
-	void render(float *baseModelVerts, Shader& sh);
+	void render();
 	static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 	void processInput(GLFWwindow* window);
 };

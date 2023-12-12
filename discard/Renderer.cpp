@@ -1,9 +1,8 @@
 #include "Renderer.h"
-#include "Shader.h"
 #include <iostream>
 
-Renderer::Renderer(int width, int height)
-	: screenWidth(width), screenHeight(height)
+Renderer::Renderer(int width, int height, Shader sh)
+	: screenWidth(width), screenHeight(height), shader(sh)
 {
 	initialize();
 	initializeWindow(screenWidth, screenHeight);
@@ -51,31 +50,30 @@ void Renderer::initializeGlad()
 	}
 }
 
-glm::mat4 Renderer::createModelMatrix(float transX, float transY, float angle = 0.0f, float scale = 1.0f)
+void Renderer::setupVertexArrays(Boids& boids)
 {
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(transX, transY, 0.0f));
-	model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(scale, scale, 0.0));
-	return model;
-}
-
-void Renderer::render(float *baseModelVerts, Shader& sh)
-{
-	unsigned int VBO, VAO;
-	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &VBO_X);
+	glGenBuffers(1, &VBO_Y);
 	glGenVertexArrays(1, &VAO);
 
 	glBindVertexArray(VAO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, 9 * sizeof(float), baseModelVerts, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (const void*)0);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_X);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(boids.positionX), boids.positionX, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 1, GL_FLOAT, GL_FALSE, sizeof(float), (const void*)0);
 	glEnableVertexAttribArray(0);
 
-	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_Y);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(boids.positionY), boids.positionY, GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(float), (const void*)0);
+	glEnableVertexAttribArray(1);
 
+	glBindVertexArray(0);
+}
+
+
+void Renderer::render()
+{
 	while (!glfwWindowShouldClose(window))
 	{
 		// input
@@ -87,9 +85,9 @@ void Renderer::render(float *baseModelVerts, Shader& sh)
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		sh.use();
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		
+
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------

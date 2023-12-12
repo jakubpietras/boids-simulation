@@ -4,11 +4,12 @@
 struct Boids
 {
 	int boidsNumber;
-	std::vector<float> positionX;
-	std::vector<float> positionY;
-	std::vector<float> velocityX;
-	std::vector<float> velocityY;
+	float* positionX;
+	float* positionY;
+	float* velocityX;
+	float* velocityY;
 
 	Boids(int boidsNumber);
+	~Boids();
 	void randomizeParameters(int screenWidth, int screenHeight);
 };
