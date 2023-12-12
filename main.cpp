@@ -11,16 +11,16 @@ int main(void)
 {
 	const int boidsNumber = 50;
 	const int nbhoodRadius = 25;
-	const int screenWidth = 800;
-	const int screenHeight = 600;
+	const int screenWidth = 1920;
+	const int screenHeight = 1080;
 
 	const char* vertexShaderPath = "./boid.vert";
 	const char* fragmentShaderPath = "./boid.frag";
 
 	float vertices[] = {
-		-0.5f, -0.5f, 0.0f, // left  
-		 0.5f, -0.5f, 0.0f, // right 
-		 0.0f,  0.5f, 0.0f  // top   
+	-0.25f, -0.5f, 0.0f,
+	 0.25f, -0.5f, 0.0f,
+	 0.0f,  0.5f, 0.0f
 	};
 
 
@@ -46,7 +46,7 @@ int main(void)
 	Renderer r(screenWidth, screenHeight);
 	Shader sh(vertexShaderPath, fragmentShaderPath);
 
-	r.render(vertices, sh);
+	r.render(boids, vertices, sh);
 
 	return 0;
 }

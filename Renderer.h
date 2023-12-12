@@ -12,7 +12,7 @@ class Renderer
 private:
 	GLFWwindow* window;
 	int screenWidth, screenHeight;
-	GLuint VBO_X, VBO_Y, VAO;
+	unsigned int posVBO, matVBO, VAO;
 
 public:
 	Renderer(int width, int height);
@@ -24,8 +24,9 @@ public:
 	//void setupVertexArrays(Boids& boids);
 
 	glm::mat4 createModelMatrix(float transX, float transY, float angle, float scale);
+	void initializeBuffers();
 
-	void render(float *baseModelVerts, Shader& sh);
+	void render(Boids& boids, float *baseModelVerts, Shader& sh);
 	static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 	void processInput(GLFWwindow* window);
 };

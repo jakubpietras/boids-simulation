@@ -32,7 +32,7 @@ void Boids::randomizeParameters(int screenWidth, int screenHeight)
         positionX[i] = randX * screenWidth;
         positionY[i] = randY * screenHeight;
 
-        velocityX[i] = 0;
-        velocityY[i] = 0;
+        velocityX[i] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+        velocityY[i] = 1 - velocityX[i];
     }
 }
