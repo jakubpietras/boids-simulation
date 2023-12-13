@@ -1,6 +1,7 @@
 #include <iostream>
 #include "SpatialGrid.h"
 #include "Boids.h"
+#include "Simulation.h"
 #include <ctime>
 #include <cstdlib>
 #include <chrono>
@@ -9,13 +10,13 @@
 
 int main(void)
 {
-	const int boidsNumber = 50;
-	const int nbhoodRadius = 25;
+	const int boidsNumber = 1000;
+	const int nbhoodRadius = 20;
 	const int screenWidth = 1920;
 	const int screenHeight = 1080;
 
-	const char* vertexShaderPath = "./boid.vert";
-	const char* fragmentShaderPath = "./boid.frag";
+	const char* vertexShaderPath = "./shaders/boid.vert";
+	const char* fragmentShaderPath = "./shaders/boid.frag";
 
 	float vertices[] = {
 	-0.25f, -0.5f, 0.0f,
@@ -34,7 +35,7 @@ int main(void)
 	grid.updateBoidCellMap(boids, boidsNumber);
 
 
-	auto list = grid.getBoidsFromRegion(grid.hashBoid(boids, 2));
+	auto list = grid.getBoidsFromRegion(grid.hashBoid(boids, 0));
 	auto stop = std::chrono::high_resolution_clock::now();
 	for(auto item : list)
 	{
@@ -45,8 +46,9 @@ int main(void)
 	std::cout << "Time: " << duration.count() << std::endl;
 	Renderer r(screenWidth, screenHeight);
 	Shader sh(vertexShaderPath, fragmentShaderPath);
+	Simulation sim(boids, grid);
 
-	r.render(boids, vertices, sh);
+	r.render(boids, vertices, sh, sim);
 
 	return 0;
 }

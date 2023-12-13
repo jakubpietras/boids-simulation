@@ -12,4 +12,6 @@ struct Boids
 	Boids(int boidsNumber);
 	~Boids();
 	void randomizeParameters(int screenWidth, int screenHeight);
+	void updatePositionsSingleBoid(float deltaTime, int boidId, int screenWidth, int screenHeight);
+	void updatePositionsAllBoids(float deltaTime, int screenWidth, int screenHeight);
 };

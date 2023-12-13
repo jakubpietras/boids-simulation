@@ -19,7 +19,7 @@ int SpatialGrid::hashBoid(Boids& boids, int boidId)
 	int cellIdX = static_cast<int>(floor(boids.positionX[boidId] / cellSize));
 	int cellIdY = static_cast<int>(floor(boids.positionY[boidId] / cellSize));
 	//// Debugging output
-	std::cout << "Boid: " << boidId << ", Position: (" << boids.positionX[boidId] << ", " << boids.positionY[boidId] << "), Cell: (" << cellIdX << ", " << cellIdY << ")\n";
+	//std::cout << "Boid: " << boidId << ", Position: (" << boids.positionX[boidId] << ", " << boids.positionY[boidId] << "), Cell: (" << cellIdX << ", " << cellIdY << ")\n";
 
 	return cellIdY * cellsNumberX + cellIdX;
 }
@@ -70,7 +70,7 @@ std::vector<int> SpatialGrid::getBoidsFromRegion(int centerCellIndex)
 	// Checking top cell
 	if (centerCellIndex + cellsNumberX < cellsNumber)
 	{
-		boidsToAdd = getBoidsFromCell(centerCellIndex - cellsNumberX);
+		boidsToAdd = getBoidsFromCell(centerCellIndex + cellsNumberX);
 		boidsIndices.insert(boidsIndices.end(), boidsToAdd.begin(), boidsToAdd.end());
 	}
 	if (centerCellIndex % cellsNumber == 0)		// Cell at the left boundary
@@ -84,7 +84,7 @@ std::vector<int> SpatialGrid::getBoidsFromRegion(int centerCellIndex)
 	// Checking top-left cell
 	if (centerCellIndex + cellsNumberX - 1 < cellsNumber)
 	{
-		boidsToAdd = getBoidsFromCell(centerCellIndex - cellsNumberX - 1);
+		boidsToAdd = getBoidsFromCell(centerCellIndex + cellsNumberX - 1);
 		boidsIndices.insert(boidsIndices.end(), boidsToAdd.begin(), boidsToAdd.end());
 	}
 	return boidsIndices;
