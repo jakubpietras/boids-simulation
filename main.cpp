@@ -11,7 +11,7 @@
 int main(void)
 {
 	const int boidsNumber = 1000;
-	const int nbhoodRadius = 20;
+	const int nbhoodRadius = 8;
 	const int screenWidth = 1920;
 	const int screenHeight = 1080;
 
@@ -35,7 +35,7 @@ int main(void)
 	grid.updateBoidCellMap(boids, boidsNumber);
 
 
-	auto list = grid.getBoidsFromRegion(grid.hashBoid(boids, 0));
+	auto list = grid.getBoidsFromRegion(grid.hashBoid(boids, 54));
 	auto stop = std::chrono::high_resolution_clock::now();
 	for(auto item : list)
 	{
@@ -46,7 +46,7 @@ int main(void)
 	std::cout << "Time: " << duration.count() << std::endl;
 	Renderer r(screenWidth, screenHeight);
 	Shader sh(vertexShaderPath, fragmentShaderPath);
-	Simulation sim(boids, grid);
+	Simulation sim(boids, grid, nbhoodRadius);
 
 	r.render(boids, vertices, sh, sim);
 

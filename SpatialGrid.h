@@ -24,7 +24,12 @@ public:
 	int hashBoid(Boids& boids, int boidId);
 	void updateBoidCellMap(Boids& boids, int boidsNumber);
 	void updateCellsStart();
+	int cellRowIndex(int cellIndex);
+	bool isCellInRow(int cellIndex, int rowIndex);
+	bool isCellInGrid(int cellIndex);
 	std::vector<int> getBoidsFromCell(int cellIndex);
+	std::vector<int> getBoidsFromRegion2(int centerCellIndex);
+	std::vector<int> getBoidsFromRegion3(int centerCellIndex);
 	std::vector<int> getBoidsFromRegion(int centerCellIndex);
 	void printGibberish();
 };

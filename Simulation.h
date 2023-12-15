@@ -7,7 +7,8 @@ class Simulation
 public:
 	float separationFactor, alignmentFactor, cohesionFactor;
 	float maxSpeed, minSpeed;
-	Simulation(Boids& boidsStruct, SpatialGrid& spatialGrid);
+	float visionRadius;
+	Simulation(Boids& boidsStruct, SpatialGrid& spatialGrid, float radius);
 	void runSimulationFrame(float deltaTime);
 
 private:

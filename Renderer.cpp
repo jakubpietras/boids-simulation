@@ -182,6 +182,10 @@ void Renderer::render(Boids& boids, float *baseModelVerts, Shader& sh, Simulatio
 		// -----
 		ImGui::Begin("Boids Simulation controls");
 		ImGui::Text("FPS: %.2f", 1.0f / deltaTime);
+		ImGui::SliderFloat("Separation", &sim.separationFactor, 0.0f, 10.0f);
+		ImGui::SliderFloat("Alignment", &sim.alignmentFactor, 0.0f, 10.0f);
+		ImGui::SliderFloat("Cohesion", &sim.cohesionFactor, 0.0f, 10.0f);
+		ImGui::SliderFloat("Radius", &sim.visionRadius, 0.0f, 20.0f);
 		ImGui::End();
 
 		ImGui::Render();

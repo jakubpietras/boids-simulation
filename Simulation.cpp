@@ -4,12 +4,13 @@
 #include <algorithm>
 #include <cmath>
 
-Simulation::Simulation(Boids& boidsStruct, SpatialGrid& spatialGrid)
-	: separationFactor(0.5f),
-	alignmentFactor(0.0005f),
+Simulation::Simulation(Boids& boidsStruct, SpatialGrid& spatialGrid, float radius)
+	: separationFactor(0.05f),
+	alignmentFactor(0.05f),
 	cohesionFactor(0.0005f),
 	maxSpeed(70.0f),
 	minSpeed(35.0f),
+	visionRadius(radius),
 	grid(spatialGrid),
 	boids(boidsStruct)
 { }
@@ -23,7 +24,7 @@ void Simulation::runSimulationFrame(float deltaTime)
 		//std::cout << "Hash of " << i << " is " << grid.hashBoid(boids, i) << std::endl;
 		std::vector<int> nhoodBoids = grid.getBoidsFromRegion(grid.hashBoid(boids, i));
 		std::vector<int> boidsInRadius;
-		std::copy_if(nhoodBoids.begin(), nhoodBoids.end(), std::back_inserter(boidsInRadius), [i, this](int boid) {return isWithinRadius(i, boid, 25); });
+		std::copy_if(nhoodBoids.begin(), nhoodBoids.end(), std::back_inserter(boidsInRadius), [i, this](int boid) {return isWithinRadius(i, boid, visionRadius); });
 		separation(boidsInRadius, i);
 		alignment(boidsInRadius, i);
 		cohesion(boidsInRadius, i);

@@ -47,6 +47,22 @@ void SpatialGrid::updateCellsStart()
 	cellsStart[boidCellMap.data[0].cellNumber] = 0;
 }
 
+int SpatialGrid::cellRowIndex(int cellIndex)
+{
+	int rowIndex = cellIndex / cellsNumberX;
+	return (rowIndex >= cellsNumberX || cellIndex < 0) ? -1 : rowIndex;
+}
+
+bool SpatialGrid::isCellInRow(int cellIndex, int rowIndex)
+{
+	return cellRowIndex(cellIndex) == rowIndex;
+}
+
+bool SpatialGrid::isCellInGrid(int cellIndex)
+{
+	return cellIndex >= 0 && cellIndex < cellsNumber;
+}
+
 std::vector<int> SpatialGrid::getBoidsFromCell(int cellIndex)
 {
 	std::vector<int> boidsIndices;
@@ -61,7 +77,7 @@ std::vector<int> SpatialGrid::getBoidsFromCell(int cellIndex)
 	return boidsIndices;
 }
 
-std::vector<int> SpatialGrid::getBoidsFromRegion(int centerCellIndex)
+std::vector<int> SpatialGrid::getBoidsFromRegion2(int centerCellIndex)
 {
 	std::vector<int> boidsIndices;
 	// Checking center cell
@@ -88,6 +104,131 @@ std::vector<int> SpatialGrid::getBoidsFromRegion(int centerCellIndex)
 		boidsIndices.insert(boidsIndices.end(), boidsToAdd.begin(), boidsToAdd.end());
 	}
 	return boidsIndices;
+}
+
+std::vector<int> SpatialGrid::getBoidsFromRegion3(int centerCellIndex)
+{
+	std::vector<int> boidsIndices;
+	std::vector<int> boidsToAdd;
+		
+	// Center cell
+	boidsToAdd = getBoidsFromCell(centerCellIndex);
+	boidsIndices.insert(boidsIndices.end(), boidsToAdd.begin(), boidsToAdd.end());
+
+	if (cellRowIndex(centerCellIndex + 1) == cellRowIndex(centerCellIndex) && (centerCellIndex + 1 < cellsNumber))
+	{
+		boidsToAdd = getBoidsFromCell(centerCellIndex + 1);
+		boidsIndices.insert(boidsIndices.end(), boidsToAdd.begin(), boidsToAdd.end());
+	}
+	if (cellRowIndex(centerCellIndex - 1) == cellRowIndex(centerCellIndex) && (centerCellIndex - 1 > 0))
+	{
+		boidsToAdd = getBoidsFromCell(centerCellIndex - 1);
+		boidsIndices.insert(boidsIndices.end(), boidsToAdd.begin(), boidsToAdd.end());
+	}
+
+	// Upper row
+	int topCellIndex = centerCellIndex + cellsNumberX;
+	if (cellRowIndex(topCellIndex) != -1)
+	{
+		boidsToAdd = getBoidsFromCell(topCellIndex);
+		boidsIndices.insert(boidsIndices.end(), boidsToAdd.begin(), boidsToAdd.end());
+
+		if (cellRowIndex(topCellIndex + 1) == cellRowIndex(topCellIndex) && (topCellIndex + 1 < cellsNumber))
+		{
+			boidsToAdd = getBoidsFromCell(topCellIndex + 1);
+			boidsIndices.insert(boidsIndices.end(), boidsToAdd.begin(), boidsToAdd.end());
+		}
+		if (cellRowIndex(topCellIndex - 1) == cellRowIndex(topCellIndex))
+		{
+			boidsToAdd = getBoidsFromCell(topCellIndex - 1);
+			boidsIndices.insert(boidsIndices.end(), boidsToAdd.begin(), boidsToAdd.end());
+		}
+	}
+
+	// Bottom row
+	int bottomCellIndex = centerCellIndex - cellsNumberX;
+	if (cellRowIndex(bottomCellIndex) != -1)
+	{
+		boidsToAdd = getBoidsFromCell(bottomCellIndex);
+		boidsIndices.insert(boidsIndices.end(), boidsToAdd.begin(), boidsToAdd.end());
+
+		if (cellRowIndex(bottomCellIndex + 1) == cellRowIndex(bottomCellIndex))
+		{
+			boidsToAdd = getBoidsFromCell(bottomCellIndex + 1);
+			boidsIndices.insert(boidsIndices.end(), boidsToAdd.begin(), boidsToAdd.end());
+		}
+		if (cellRowIndex(bottomCellIndex - 1) == cellRowIndex(bottomCellIndex) && (bottomCellIndex - 1 > 0))
+		{
+			boidsToAdd = getBoidsFromCell(bottomCellIndex - 1);
+			boidsIndices.insert(boidsIndices.end(), boidsToAdd.begin(), boidsToAdd.end());
+		}
+	}
+
+	return boidsIndices;
+}
+
+std::vector<int> SpatialGrid::getBoidsFromRegion(int centerCellIndex)
+{
+	std::vector<int> boidsIndices;
+	std::vector<int> boidsToAdd;
+
+	int center = centerCellIndex, 
+		left = centerCellIndex - 1, 
+		right = centerCellIndex - 1,
+		top = centerCellIndex + cellsNumberX,
+		topLeft = centerCellIndex + cellsNumberX - 1,
+		topRight = centerCellIndex + cellsNumberX + 1,
+		bottom = centerCellIndex - cellsNumberX,
+		bottomLeft = centerCellIndex - cellsNumberX - 1,
+		bottomRight = centerCellIndex - cellsNumberX + 1;
+
+	boidsToAdd = getBoidsFromCell(center);
+	boidsIndices.insert(boidsIndices.end(), boidsToAdd.begin(), boidsToAdd.end());
+
+	if (isCellInRow(left, cellRowIndex(center)) && isCellInGrid(left))
+	{
+		boidsToAdd = getBoidsFromCell(left);
+			boidsIndices.insert(boidsIndices.end(), boidsToAdd.begin(), boidsToAdd.end());
+	}
+	if (isCellInRow(right, cellRowIndex(center)) && isCellInGrid(right))
+	{
+		boidsToAdd = getBoidsFromCell(right);
+		boidsIndices.insert(boidsIndices.end(), boidsToAdd.begin(), boidsToAdd.end());
+	}
+	
+	if (isCellInGrid(top))
+	{
+		boidsToAdd = getBoidsFromCell(top);
+		boidsIndices.insert(boidsIndices.end(), boidsToAdd.begin(), boidsToAdd.end());
+		if (isCellInRow(topLeft, cellRowIndex(top)) && isCellInGrid(topLeft))
+		{
+			boidsToAdd = getBoidsFromCell(topLeft);
+			boidsIndices.insert(boidsIndices.end(), boidsToAdd.begin(), boidsToAdd.end());
+		}
+		if (isCellInRow(topRight, cellRowIndex(top)) && isCellInGrid(topRight))
+		{
+			boidsToAdd = getBoidsFromCell(topRight);
+			boidsIndices.insert(boidsIndices.end(), boidsToAdd.begin(), boidsToAdd.end());
+		}
+	}
+
+	if (isCellInGrid(bottom))
+	{
+		boidsToAdd = getBoidsFromCell(bottom);
+		boidsIndices.insert(boidsIndices.end(), boidsToAdd.begin(), boidsToAdd.end());
+		if (isCellInRow(bottomLeft, cellRowIndex(bottom)) && isCellInGrid(bottomLeft))
+		{
+			boidsToAdd = getBoidsFromCell(bottomLeft);
+			boidsIndices.insert(boidsIndices.end(), boidsToAdd.begin(), boidsToAdd.end());
+		}
+		if (isCellInRow(bottomRight, cellRowIndex(bottom)) && isCellInGrid(bottomRight))
+		{
+			boidsToAdd = getBoidsFromCell(bottomRight);
+			boidsIndices.insert(boidsIndices.end(), boidsToAdd.begin(), boidsToAdd.end());
+		}
+	}
+	return boidsIndices;
+
 }
 
 void SpatialGrid::printGibberish()
