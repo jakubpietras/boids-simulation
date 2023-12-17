@@ -1,5 +1,4 @@
 #include "BoidCellMap.h"
-#include <algorithm>
 
 BoidCellMap::BoidCellMap() = default;
 

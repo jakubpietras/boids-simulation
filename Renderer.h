@@ -15,11 +15,11 @@
 class Renderer
 {
 private:
-	GLFWwindow* window;
 	int screenWidth, screenHeight;
 	unsigned int posVBO, matVBO, VAO;
 
 public:
+	GLFWwindow* window;
 	Renderer(int width, int height);
 	~Renderer();
 	// Initializers
@@ -27,11 +27,10 @@ public:
 	void initializeWindow(int screenWidth, int screenHeight);
 	void initializeGlad();
 	void initializeImgui();
+	void initializeBuffers();
 	//void setupVertexArrays(Boids& boids);
 
 	glm::mat4 createModelMatrix(float transX, float transY, float angle, float scale);
-	void initializeBuffers();
-
 	void render(Boids& boids, float *baseModelVerts, Shader& sh, Simulation& sim);
 	static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 	void processInput(GLFWwindow* window);

@@ -1,10 +1,10 @@
-#include <iostream>
 #include "SpatialGrid.h"
-#include "Boids.h"
-#include <cmath>
 
 SpatialGrid::SpatialGrid(int width, int height, int cellSize, int boidsNumber)
-	: totalWidth(width), totalHeight(height), cellSize(cellSize), boidsNumber(boidsNumber)
+	: totalWidth(width), 
+	totalHeight(height), 
+	cellSize(cellSize), 
+	boidsNumber(boidsNumber)
 {
 	cellsNumberX = totalWidth / cellSize;
 	cellsNumberY = totalHeight / cellSize;
@@ -13,13 +13,15 @@ SpatialGrid::SpatialGrid(int width, int height, int cellSize, int boidsNumber)
 	boidCellMap = BoidCellMap(boidsNumber);
 }
 
-
 int SpatialGrid::hashBoid(Boids& boids, int boidId)
 {
-	int cellIdX = static_cast<int>(floor(boids.positionX[boidId] / cellSize));
-	int cellIdY = static_cast<int>(floor(boids.positionY[boidId] / cellSize));
-	//// Debugging output
-	//std::cout << "Boid: " << boidId << ", Position: (" << boids.positionX[boidId] << ", " << boids.positionY[boidId] << "), Cell: (" << cellIdX << ", " << cellIdY << ")\n";
+	int cellIdX = std::min(static_cast<int>(floor(boids.positionX[boidId] / cellSize)), cellsNumberX - 1);
+	int cellIdY = std::min(static_cast<int>(floor(boids.positionY[boidId] / cellSize)), cellsNumberY - 1);
+	
+	if (cellIdX < 0 || cellIdX >= cellsNumberX || cellIdY < 0 || cellIdY >= cellsNumberY)
+	{
+		throw std::out_of_range("Cell indices are out of bounds.");
+	}
 
 	return cellIdY * cellsNumberX + cellIdX;
 }
@@ -65,7 +67,7 @@ bool SpatialGrid::isCellInGrid(int cellIndex)
 
 std::vector<int> SpatialGrid::getBoidsFromCell(int cellIndex)
 {
-	std::vector<int> boidsIndices;
+	std::vector<int> boidsIndices = {};
 	int i = cellsStart[cellIndex];
 	if (i < 0)
 		return boidsIndices;
@@ -77,7 +79,7 @@ std::vector<int> SpatialGrid::getBoidsFromCell(int cellIndex)
 	return boidsIndices;
 }
 
-std::vector<int> SpatialGrid::getBoidsFromRegion2(int centerCellIndex)
+/* std::vector<int> SpatialGrid::getBoidsFromRegion2(int centerCellIndex)
 {
 	std::vector<int> boidsIndices;
 	// Checking center cell
@@ -165,7 +167,7 @@ std::vector<int> SpatialGrid::getBoidsFromRegion3(int centerCellIndex)
 	}
 
 	return boidsIndices;
-}
+} */
 
 std::vector<int> SpatialGrid::getBoidsFromRegion(int centerCellIndex)
 {
@@ -228,13 +230,4 @@ std::vector<int> SpatialGrid::getBoidsFromRegion(int centerCellIndex)
 		}
 	}
 	return boidsIndices;
-
-}
-
-void SpatialGrid::printGibberish()
-{
-	for (int i = 0; i < boidsNumber; i++)
-	{
-		std::cout << "B: " << boidCellMap.data[i].boidNumber << " C: " << boidCellMap.data[i].cellNumber << std::endl;
-	}
 }

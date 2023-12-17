@@ -1,54 +1,50 @@
-#include <iostream>
+#include "Renderer.h"
 #include "SpatialGrid.h"
 #include "Boids.h"
 #include "Simulation.h"
+#include <iostream>
 #include <ctime>
 #include <cstdlib>
 #include <chrono>
 #include <vector>
-#include "Renderer.h"
 
 int main(void)
 {
+	// Initial parameters of the simulation
 	const int boidsNumber = 1000;
-	const int nbhoodRadius = 8;
-	const int screenWidth = 1920;
-	const int screenHeight = 1080;
-
-	const char* vertexShaderPath = "./shaders/boid.vert";
-	const char* fragmentShaderPath = "./shaders/boid.frag";
-
-	float vertices[] = {
+	const int nbhoodRadius = 10;
+	const int screenWidth = 1600;
+	const int screenHeight = 880;
+	const int minSpeed = 30;
+	const int maxSpeed = 50;
+	float modelVertices[] = {
 	-0.25f, -0.5f, 0.0f,
 	 0.25f, -0.5f, 0.0f,
 	 0.0f,  0.5f, 0.0f
 	};
-
+	const char* vertexShaderPath = "./shaders/boid.vert";
+	const char* fragmentShaderPath = "./shaders/boid.frag";
 
 	std::srand(std::time(nullptr));
 
-	Boids boids = Boids(boidsNumber);
+	Boids boids = Boids(boidsNumber, minSpeed, maxSpeed);
 	boids.randomizeParameters(screenWidth, screenHeight);
 
-	auto start = std::chrono::high_resolution_clock::now();
 	SpatialGrid grid = SpatialGrid(screenWidth, screenHeight, nbhoodRadius, boidsNumber);
 	grid.updateBoidCellMap(boids, boidsNumber);
 
-
-	auto list = grid.getBoidsFromRegion(grid.hashBoid(boids, 54));
-	auto stop = std::chrono::high_resolution_clock::now();
-	for(auto item : list)
-	{
-		std::cout << item << std::endl;
-	}
-
-	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-	std::cout << "Time: " << duration.count() << std::endl;
 	Renderer r(screenWidth, screenHeight);
 	Shader sh(vertexShaderPath, fragmentShaderPath);
 	Simulation sim(boids, grid, nbhoodRadius);
 
-	r.render(boids, vertices, sh, sim);
+	/*while (!glfwWindowShouldClose(r.window))
+	{
+
+	}*/
+
+
+	r.render(boids, modelVertices, sh, sim);
 
 	return 0;
 }
+

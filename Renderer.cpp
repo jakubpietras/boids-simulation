@@ -174,18 +174,20 @@ void Renderer::render(Boids& boids, float *baseModelVerts, Shader& sh, Simulatio
 			glDrawArrays(GL_TRIANGLES, 0, 3);
 		}
 		
-		sim.runSimulationFrame(deltaTime);
 		boids.updatePositionsAllBoids(deltaTime, screenWidth, screenHeight);
-		
+		sim.runSimulationFrame(deltaTime);
+
 
 		// imgui
 		// -----
 		ImGui::Begin("Boids Simulation controls");
 		ImGui::Text("FPS: %.2f", 1.0f / deltaTime);
-		ImGui::SliderFloat("Separation", &sim.separationFactor, 0.0f, 10.0f);
-		ImGui::SliderFloat("Alignment", &sim.alignmentFactor, 0.0f, 10.0f);
-		ImGui::SliderFloat("Cohesion", &sim.cohesionFactor, 0.0f, 10.0f);
-		ImGui::SliderFloat("Radius", &sim.visionRadius, 0.0f, 20.0f);
+		ImGui::InputFloat("Separation", &sim.separationFactor, 0.05f);
+		ImGui::InputFloat("Alignment", &sim.alignmentFactor, 0.05f);
+		ImGui::InputFloat("Cohesion", &sim.cohesionFactor, 0.005f);
+		ImGui::SliderFloat("Radius", &sim.visionRadius, 5.0f, 50.0f);
+		ImGui::SliderFloat("Max Speed", &sim.maxSpeed, 30.0f, 100.0f);
+		ImGui::SliderFloat("Min Speed", &sim.minSpeed, 5.0f, 20.0f);
 		ImGui::End();
 
 		ImGui::Render();

@@ -1,45 +1,31 @@
 #include "Boids.h"
 #include "SpatialGrid.h"
-#include <cstdlib>
+#include "Helpers.h"
 
 
-Boids::Boids(int boidsNumber)
-    : boidsNumber(boidsNumber)
-{
-    positionX = new float[boidsNumber];
-    positionY = new float[boidsNumber];
-    velocityX = new float[boidsNumber];
-    velocityY = new float[boidsNumber];
-}
-
-Boids::~Boids()
-{
-    delete[] positionX;
-    delete[] positionY;
-    delete[] velocityX;
-    delete[] velocityY;
-}
+Boids::Boids(int boidsNumber, float minSpeed, float maxSpeed)
+    : boidsNumber(boidsNumber),
+    positionX(boidsNumber, 0.0f),
+    positionY(boidsNumber, 0.0f),
+    velocityX(boidsNumber, 0.0f),
+    velocityY(boidsNumber, 0.0f),
+    minSpeed(minSpeed),
+    maxSpeed(maxSpeed)
+{ }
 
 void Boids::randomizeParameters(int screenWidth, int screenHeight)
 {
     for (int i = 0; i < boidsNumber; i++)
-    {
-        // Generate random values in the range [0, 1)
-        float randX = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
-        float randY = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
-
-        // Scale and shift to the desired range
-        positionX[i] = randX * screenWidth;
-        positionY[i] = randY * screenHeight;
-
-        velocityX[i] = randX * 50;
-        velocityY[i] = randY * 50;
+    {        
+        positionX[i] = Helpers::randomFloat(0.0f, static_cast<float>(screenWidth)/2);
+        positionY[i] = Helpers::randomFloat(0.0f, static_cast<float>(screenHeight)/2);
+        velocityX[i] = Helpers::randomFloat(-maxSpeed, maxSpeed);
+        velocityY[i] = Helpers::randomFloat(-maxSpeed, maxSpeed);
     }
 }
 
 void Boids::updatePositionsSingleBoid(float deltaTime, int boidId, int screenWidth, int screenHeight)
 {
-    // For a single boid
     float changePosX = velocityX[boidId] * deltaTime;
     if (positionX[boidId] + changePosX > screenWidth)
     {
@@ -61,13 +47,13 @@ void Boids::updatePositionsSingleBoid(float deltaTime, int boidId, int screenWid
     float changePosY = velocityY[boidId] * deltaTime;
     if (positionY[boidId] + changePosY > screenHeight)
     {
-        // position out of the window to the right
+        // position above the top of the window
         positionY[boidId] = screenHeight - 0.1f;
         velocityY[boidId] = -velocityY[boidId];
     }
     else if (positionY[boidId] + changePosY < 0)
     {
-        // posiiton out of the window to the left
+        // position below the bottom of the window
         positionY[boidId] = 0.1f;
         velocityY[boidId] = -velocityY[boidId];
     }
@@ -83,4 +69,26 @@ void Boids::updatePositionsAllBoids(float deltaTime, int screenWidth, int screen
     {
         updatePositionsSingleBoid(deltaTime, i, screenWidth, screenHeight);
     }
+}
+
+void Boids::updateVelocitySingle(float velocityChangeX, float velocityChangeY, int boidId)
+{
+    float xNewVelocity = velocityX[boidId] + velocityChangeX;
+    float yNewVelocity = velocityY[boidId] + velocityChangeY;
+
+    float newSpeed = sqrt(xNewVelocity * xNewVelocity + yNewVelocity * yNewVelocity);
+
+    if (newSpeed > maxSpeed)
+    {
+        xNewVelocity *= (maxSpeed / newSpeed);
+        yNewVelocity *= (maxSpeed / newSpeed);
+    }
+    if (newSpeed < minSpeed)
+    {
+        xNewVelocity *= (minSpeed / newSpeed);
+        yNewVelocity *= (minSpeed / newSpeed);
+    }
+
+    velocityX[boidId] = xNewVelocity;
+    velocityY[boidId] = yNewVelocity;
 }
