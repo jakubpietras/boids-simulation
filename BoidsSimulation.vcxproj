@@ -136,6 +136,7 @@
     <ClCompile Include="BoidCellMap.cpp" />
     <ClCompile Include="Boids.cpp" />
     <ClCompile Include="glad.c" />
+    <ClCompile Include="GUIController.cpp" />
     <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
@@ -153,6 +154,7 @@
   <ItemGroup>
     <ClInclude Include="BoidCellMap.h" />
     <ClInclude Include="Boids.h" />
+    <ClInclude Include="GUIController.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />

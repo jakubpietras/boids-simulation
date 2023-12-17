@@ -1,8 +1,4 @@
 #pragma once
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_glfw.h"
-#include "imgui/imgui_impl_opengl3.h"
-
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -11,6 +7,7 @@
 #include "Shader.h"
 #include "Simulation.h"
 #include "Boids.h"
+#include "GUIController.h"
 
 class Renderer
 {
@@ -26,12 +23,9 @@ public:
 	void initialize();
 	void initializeWindow(int screenWidth, int screenHeight);
 	void initializeGlad();
-	void initializeImgui();
 	void initializeBuffers();
-	//void setupVertexArrays(Boids& boids);
-
 	glm::mat4 createModelMatrix(float transX, float transY, float angle, float scale);
-	void render(Boids& boids, float *baseModelVerts, Shader& sh, Simulation& sim);
+	void renderFrame(Boids& boids, float *baseModelVerts, Shader& sh, Simulation& sim, float& deltaTime, GUIController& gui);
 	static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 	void processInput(GLFWwindow* window);
 };

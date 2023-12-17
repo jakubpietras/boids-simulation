@@ -1,3 +1,4 @@
+#include "GUIController.h"
 #include "Renderer.h"
 #include "SpatialGrid.h"
 #include "Boids.h"
@@ -36,15 +37,18 @@ int main(void)
 	Renderer r(screenWidth, screenHeight);
 	Shader sh(vertexShaderPath, fragmentShaderPath);
 	Simulation sim(boids, grid, nbhoodRadius);
+	GUIController gui(r.window, sim);
 
-	/*while (!glfwWindowShouldClose(r.window))
+	float deltaTime = 0.0f;
+	while (!glfwWindowShouldClose(r.window))
 	{
-
-	}*/
-
-
-	r.render(boids, modelVertices, sh, sim);
-
+		r.renderFrame(boids, modelVertices, sh, sim, deltaTime, gui);
+		boids.updatePositionsAllBoids(deltaTime, screenWidth, screenHeight);
+		sim.runSimulationFrame(deltaTime);
+	}
+	glfwTerminate();
+	gui.terminate();
+	
 	return 0;
 }
 

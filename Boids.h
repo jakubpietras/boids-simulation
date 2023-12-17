@@ -1,4 +1,6 @@
 #pragma once
+//#include "SpatialGrid.h"
+#include "Helpers.h"
 #include <vector>
 
 struct Boids

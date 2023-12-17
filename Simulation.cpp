@@ -1,6 +1,6 @@
 #include "Simulation.h"
-
-
+#include "Boids.h"
+#include "SpatialGrid.h"
 
 Simulation::Simulation(Boids& boidsStruct, SpatialGrid& spatialGrid, float radius)
 	: separationFactor(0.5f),
@@ -155,30 +155,30 @@ bool Simulation::isWithinRadius(int observerBoidId, int targetBoidId)
 
 }
 
-bool Simulation::isWithinConeOfVision(int observerBoidId, int targetBoidId)
-{
-	if (observerBoidId < 0 || observerBoidId >= boids.boidsNumber ||
-		targetBoidId < 0 || targetBoidId >= boids.boidsNumber) {
-		return false;
-	}
-
-	// Get velocity vector of the observer boid
-	float observerVelX = boids.velocityX[observerBoidId];
-	float observerVelY = boids.velocityY[observerBoidId];
-
-	// Get vector from observer to target
-	float toTargetX = boids.positionX[targetBoidId] - boids.positionX[observerBoidId];
-	float toTargetY = boids.positionY[targetBoidId] - boids.positionY[observerBoidId];
-
-	// Calculate dot product
-	float dotProduct = observerVelX * toTargetX + observerVelY * toTargetY;
-
-	// Calculate cosine of the cone angle
-	float cosConeAngle = cos(visionAngle);
-
-	// Compare with the cosine of the cone angle
-	return dotProduct > cosConeAngle;
-}
+//bool Simulation::isWithinConeOfVision(int observerBoidId, int targetBoidId)
+//{
+//	if (observerBoidId < 0 || observerBoidId >= boids.boidsNumber ||
+//		targetBoidId < 0 || targetBoidId >= boids.boidsNumber) {
+//		return false;
+//	}
+//
+//	// Get velocity vector of the observer boid
+//	float observerVelX = boids.velocityX[observerBoidId];
+//	float observerVelY = boids.velocityY[observerBoidId];
+//
+//	// Get vector from observer to target
+//	float toTargetX = boids.positionX[targetBoidId] - boids.positionX[observerBoidId];
+//	float toTargetY = boids.positionY[targetBoidId] - boids.positionY[observerBoidId];
+//
+//	// Calculate dot product
+//	float dotProduct = observerVelX * toTargetX + observerVelY * toTargetY;
+//
+//	// Calculate cosine of the cone angle
+//	float cosConeAngle = cos(visionAngle);
+//
+//	// Compare with the cosine of the cone angle
+//	return dotProduct > cosConeAngle;
+//}
 
 bool Simulation::isWithinFieldOfView(int observerBoidId, int targetBoidId)
 {

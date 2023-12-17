@@ -1,7 +1,4 @@
 #include "Boids.h"
-#include "SpatialGrid.h"
-#include "Helpers.h"
-
 
 Boids::Boids(int boidsNumber, float minSpeed, float maxSpeed)
     : boidsNumber(boidsNumber),

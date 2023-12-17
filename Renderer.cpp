@@ -1,6 +1,5 @@
 #include "Renderer.h"
-#include "Shader.h"
-#include "Simulation.h"
+
 #include <cmath>
 #include <iostream>
 #include <chrono>
@@ -12,7 +11,6 @@ Renderer::Renderer(int width, int height)
 	initialize();
 	initializeWindow(screenWidth, screenHeight);
 	initializeGlad();
-	initializeImgui();
 	glViewport(0, 0, screenWidth, screenHeight);
 }
 
@@ -55,22 +53,6 @@ void Renderer::initializeGlad()
 		return;
 	}
 }
-
-void Renderer::initializeImgui()
-{
-	// Setup Dear ImGui context
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO();
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-	//io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // IF using Docking Branch
-
-	// Setup Platform/Renderer backends
-	ImGui_ImplGlfw_InitForOpenGL(window, true);          // Second param install_callback=true will install GLFW callbacks and chain to existing ones.
-	ImGui_ImplOpenGL3_Init("#version 330");
-}
-
 
 void Renderer::initializeBuffers()
 {
@@ -118,10 +100,9 @@ glm::mat4 Renderer::createModelMatrix(float transX, float transY, float angle, f
 }
 
 
-void Renderer::render(Boids& boids, float *baseModelVerts, Shader& sh, Simulation& sim)
+void Renderer::renderFrame(Boids& boids, float *baseModelVerts, Shader& sh, Simulation& sim, float& deltaTime, GUIController& gui)
 {
-	float angle;
-
+	float angle = glm::radians(0.0f);
 	glm::mat4 modelMatrix = createModelMatrix(100.0f, 50.0f, glm::radians(90.0f), 20);
 	glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(screenWidth), 0.0f, static_cast<float>(screenHeight), 0.0f, 1.0f);
 
@@ -132,78 +113,40 @@ void Renderer::render(Boids& boids, float *baseModelVerts, Shader& sh, Simulatio
 	glBindBuffer(GL_ARRAY_BUFFER, matVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4), &modelMatrix, GL_STATIC_DRAW);
 
-	auto lastFrameTime = std::chrono::steady_clock::now();
 
-	while (!glfwWindowShouldClose(window))
+	// Rendering
+	auto frameStartTime = std::chrono::steady_clock::now();
+	
+	// XXX
+	processInput(window);
+	
+	// Setting background color
+	glClearColor(0.1f, 0.1f, 0.3f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	// Shaders
+	sh.use();
+	sh.setMat4("projection", projection);
+
+	// Buffers and drawing
+	glBindVertexArray(VAO);
+	for (int i = 0; i < boids.boidsNumber; i++)
 	{
-		// time
-		// ----
-		auto currentFrameTime = std::chrono::steady_clock::now();
-		float deltaTime = std::chrono::duration<float>(currentFrameTime - lastFrameTime).count();
-		lastFrameTime = currentFrameTime;
-
-		// simulation
-		// ----------
-		
-
-		// input
-		// -----
-		processInput(window);
-
-		// render
-		// ------
-		glClearColor(0.1f, 0.1f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		// imgui init
-		// ----------
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
-
-		// drawing
-		// -------
-		sh.use();
-		sh.setMat4("projection", projection);
-		glBindVertexArray(VAO);
-		for (int i = 0; i < boids.boidsNumber; i++)
-		{
-			angle = glm::radians(90.0f) - atan2f(boids.velocityY[i], boids.velocityX[i]);
-			modelMatrix = createModelMatrix(boids.positionX[i], boids.positionY[i], -angle, 20);
-			sh.setMat4("model", modelMatrix);
-			glDrawArrays(GL_TRIANGLES, 0, 3);
-		}
-		
-		boids.updatePositionsAllBoids(deltaTime, screenWidth, screenHeight);
-		sim.runSimulationFrame(deltaTime);
-
-
-		// imgui
-		// -----
-		ImGui::Begin("Boids Simulation controls");
-		ImGui::Text("FPS: %.2f", 1.0f / deltaTime);
-		ImGui::InputFloat("Separation", &sim.separationFactor, 0.05f);
-		ImGui::InputFloat("Alignment", &sim.alignmentFactor, 0.05f);
-		ImGui::InputFloat("Cohesion", &sim.cohesionFactor, 0.005f);
-		ImGui::SliderFloat("Radius", &sim.visionRadius, 5.0f, 50.0f);
-		ImGui::SliderFloat("Max Speed", &sim.maxSpeed, 30.0f, 100.0f);
-		ImGui::SliderFloat("Min Speed", &sim.minSpeed, 5.0f, 20.0f);
-		ImGui::End();
-
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-		
-
-		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-		// -------------------------------------------------------------------------------
-		glfwSwapBuffers(window);
-		glfwPollEvents();
+		float angle = glm::radians(90.0f) - atan2f(boids.velocityY[i], boids.velocityX[i]);
+		modelMatrix = createModelMatrix(boids.positionX[i], boids.positionY[i], -angle, 20);
+		sh.setMat4("model", modelMatrix);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 	}
 
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
-	glfwTerminate();
+	// ImGUI
+	gui.render(deltaTime);
+
+	// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+	glfwSwapBuffers(window);
+	glfwPollEvents();
+
+	auto frameEndTime = std::chrono::steady_clock::now();
+	deltaTime = std::chrono::duration<float>(frameEndTime - frameStartTime).count();	
 }
 
 void Renderer::framebuffer_size_callback(GLFWwindow* window, int width, int height)
