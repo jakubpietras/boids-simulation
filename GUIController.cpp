@@ -19,15 +19,17 @@ GUIController::GUIController(GLFWwindow* window, Simulation& simulation)
 
 void GUIController::render(float deltaTime)
 {
+	// ImGui initialization
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
+	// Widgets
 	ImGui::Begin("Boids Simulation controls");
 	ImGui::Text("FPS: %.2f", 1.0f / deltaTime);
-	ImGui::InputFloat("Separation", &sim.separationFactor, 0.05f);
-	ImGui::InputFloat("Alignment", &sim.alignmentFactor, 0.05f);
-	ImGui::InputFloat("Cohesion", &sim.cohesionFactor, 0.005f);
+	ImGui::SliderFloat("Separation", &sim.separationFactor, 0.05f, 10.0f);
+	ImGui::SliderFloat("Alignment", &sim.alignmentFactor, 0.05f, 10.0f);
+	ImGui::SliderFloat("Cohesion", &sim.cohesionFactor, 0.005f, 10.0f);
 	ImGui::SliderFloat("Radius", &sim.visionRadius, 5.0f, 50.0f);
 	ImGui::End();
 

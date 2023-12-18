@@ -46,8 +46,8 @@ int main(void)
 		boids.updatePositionsAllBoids(deltaTime, screenWidth, screenHeight);
 		sim.runSimulationFrame(deltaTime);
 	}
-	glfwTerminate();
 	gui.terminate();
+	glfwTerminate();
 	
 	return 0;
 }

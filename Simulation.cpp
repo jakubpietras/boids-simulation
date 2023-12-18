@@ -19,10 +19,7 @@ void Simulation::runSimulationFrame(float deltaTime)
 	// Update the velocities based on the simulation rules
 	for (int i = 0; i < boids.boidsNumber; i++)
 	{
-		//std::cout << "Hash of " << i << " is " << grid.hashBoid(boids, i) << std::endl;
 		std::vector<int> nhoodBoids = grid.getBoidsFromRegion(grid.hashBoid(boids, i));
-		//std::vector<int> boidsInRadius;
-		//std::copy_if(nhoodBoids.begin(), nhoodBoids.end(), std::back_inserter(boidsInRadius), [i, this](int boid) {return isWithinRadius(i, boid, visionRadius); });
 		separation(nhoodBoids, i);
 		alignment(nhoodBoids, i);
 		cohesion(nhoodBoids, i);
@@ -114,9 +111,6 @@ void Simulation::cohesion(std::vector<int> nhoodBoids, int ownId)
 
 	boids.updateVelocitySingle((xPosAvg - boids.positionX[ownId]) * cohesionFactor,
 		(yPosAvg - boids.positionY[ownId]) * cohesionFactor, ownId);
-
-	/*boids.velocityX[ownId] += (xPosAvg - boids.positionX[ownId]) * cohesionFactor;
-	boids.velocityY[ownId] += (yPosAvg - boids.positionY[ownId]) * cohesionFactor;*/
 }
 
 //void Simulation::updateVelocity(float xVelocity, float yVelocity, int boidId)

@@ -14,10 +14,10 @@ void Boids::randomizeParameters(int screenWidth, int screenHeight)
 {
     for (int i = 0; i < boidsNumber; i++)
     {        
-        positionX[i] = Helpers::randomFloat(0.0f, static_cast<float>(screenWidth)/2);
-        positionY[i] = Helpers::randomFloat(0.0f, static_cast<float>(screenHeight)/2);
-        velocityX[i] = Helpers::randomFloat(-maxSpeed, maxSpeed);
-        velocityY[i] = Helpers::randomFloat(-maxSpeed, maxSpeed);
+        positionX[i] = Helpers::randomFloat(0.0f, static_cast<float>(screenWidth));
+        positionY[i] = Helpers::randomFloat(0.0f, static_cast<float>(screenHeight));
+        velocityX[i] = Helpers::randomFloat(minSpeed, maxSpeed) * ((rand() % 2 == 0) ? -1 : 1);
+        velocityY[i] = Helpers::randomFloat(minSpeed, maxSpeed) * ((rand() % 2 == 0) ? -1 : 1);
     }
 }
 
@@ -59,6 +59,7 @@ void Boids::updatePositionsSingleBoid(float deltaTime, int boidId, int screenWid
         positionY[boidId] += changePosY;
     }
 }
+
 
 void Boids::updatePositionsAllBoids(float deltaTime, int screenWidth, int screenHeight)
 {

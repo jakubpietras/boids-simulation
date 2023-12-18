@@ -21,6 +21,5 @@ private:
 	void alignment(std::vector<int> nhoodBoids, int ownId);
 	void cohesion(std::vector<int> nhoodBoids, int ownId);
 	bool isWithinRadius(int centerBoid, int otherBoid);
-	bool isWithinConeOfVision(int centerBoid, int otherBoid);
 	bool isWithinFieldOfView(int centerBoid, int otherBoid);
 };
