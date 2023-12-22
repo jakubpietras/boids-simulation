@@ -12,12 +12,13 @@
 int main(void)
 {
 	// Initial parameters of the simulation
-	const int boidsNumber = 1000;
-	const int nbhoodRadius = 10;
+	const int boidsNumber = 5000;
+	const float nbhoodRadius = 10.0f;
+	const float visionAngle = 110.0f;
 	const int screenWidth = 1600;
 	const int screenHeight = 880;
-	const int minSpeed = 30;
-	const int maxSpeed = 50;
+	const int minSpeed = 50;
+	const int maxSpeed = 70;
 	float modelVertices[] = {
 	-0.25f, -0.5f, 0.0f,
 	 0.25f, -0.5f, 0.0f,
@@ -31,13 +32,14 @@ int main(void)
 	Boids boids = Boids(boidsNumber, minSpeed, maxSpeed);
 	boids.randomizeParameters(screenWidth, screenHeight);
 
-	SpatialGrid grid = SpatialGrid(screenWidth, screenHeight, nbhoodRadius, boidsNumber);
+	float cellSize = 2 * nbhoodRadius;
+	SpatialGrid grid = SpatialGrid(screenWidth, screenHeight, cellSize, boidsNumber);
 	grid.updateBoidCellMap(boids, boidsNumber);
 
 	Renderer r(screenWidth, screenHeight);
 	Shader sh(vertexShaderPath, fragmentShaderPath);
-	Simulation sim(boids, grid, nbhoodRadius);
-	GUIController gui(r.window, sim);
+	Simulation sim(boids, grid, nbhoodRadius, visionAngle);
+	GUIController gui(r.window, sim, cellSize);
 
 	float deltaTime = 0.0f;
 	while (!glfwWindowShouldClose(r.window))

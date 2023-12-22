@@ -9,8 +9,9 @@ class GUIController
 private:
 	GLFWwindow* window;
 	Simulation& sim;
+	float radiusMax;
 public:
-	GUIController(GLFWwindow* window, Simulation& simulation);
+	GUIController(GLFWwindow* window, Simulation& simulation, float radiusMax);
 	void render(float deltaTime);
 	void terminate();
 };

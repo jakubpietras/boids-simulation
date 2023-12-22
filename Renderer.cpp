@@ -103,7 +103,7 @@ glm::mat4 Renderer::createModelMatrix(float transX, float transY, float angle, f
 void Renderer::renderFrame(Boids& boids, float *baseModelVerts, Shader& sh, Simulation& sim, float& deltaTime, GUIController& gui)
 {
 	float angle = glm::radians(0.0f);
-	glm::mat4 modelMatrix = createModelMatrix(100.0f, 50.0f, glm::radians(90.0f), 20);
+	glm::mat4 modelMatrix = createModelMatrix(100.0f, 50.0f, glm::radians(90.0f), 10);
 	glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(screenWidth), 0.0f, static_cast<float>(screenHeight), 0.0f, 1.0f);
 
 	initializeBuffers();
@@ -133,7 +133,7 @@ void Renderer::renderFrame(Boids& boids, float *baseModelVerts, Shader& sh, Simu
 	for (int i = 0; i < boids.boidsNumber; i++)
 	{
 		float angle = glm::radians(90.0f) - atan2f(boids.velocityY[i], boids.velocityX[i]);
-		modelMatrix = createModelMatrix(boids.positionX[i], boids.positionY[i], -angle, 20);
+		modelMatrix = createModelMatrix(boids.positionX[i], boids.positionY[i], -angle, 10);
 		sh.setMat4("model", modelMatrix);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 	}

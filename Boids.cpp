@@ -27,14 +27,14 @@ void Boids::updatePositionsSingleBoid(float deltaTime, int boidId, int screenWid
     if (positionX[boidId] + changePosX > screenWidth)
     {
         // position out of the window to the right
-        positionX[boidId] = screenWidth - 0.1f;
-        velocityX[boidId] = -velocityX[boidId];
+        positionX[boidId] = 0.0f;
+        //velocityX[boidId] = -velocityX[boidId];
     }
     else if (positionX[boidId] + changePosX < 0)
     {
         // posiiton out of the window to the left
-        positionX[boidId] = 0.1f;
-        velocityX[boidId] = -velocityX[boidId];
+        positionX[boidId] = screenWidth;
+        //velocityX[boidId] = -velocityX[boidId];
     }
     else
     {
@@ -45,20 +45,59 @@ void Boids::updatePositionsSingleBoid(float deltaTime, int boidId, int screenWid
     if (positionY[boidId] + changePosY > screenHeight)
     {
         // position above the top of the window
-        positionY[boidId] = screenHeight - 0.1f;
-        velocityY[boidId] = -velocityY[boidId];
+        positionY[boidId] = 0.0f;
+        //velocityY[boidId] = -velocityY[boidId];
     }
     else if (positionY[boidId] + changePosY < 0)
     {
         // position below the bottom of the window
-        positionY[boidId] = 0.1f;
-        velocityY[boidId] = -velocityY[boidId];
+        positionY[boidId] = screenHeight;
+        //velocityY[boidId] = -velocityY[boidId];
     }
     else
     {
         positionY[boidId] += changePosY;
     }
 }
+
+//void Boids::updatePositionsSingleBoid(float deltaTime, int boidId, int screenWidth, int screenHeight)
+//{
+//    float changePosX = velocityX[boidId] * deltaTime;
+//    if (positionX[boidId] + changePosX > screenWidth)
+//    {
+//        // position out of the window to the right
+//        positionX[boidId] = screenWidth - 0.1f;
+//        velocityX[boidId] = -velocityX[boidId];
+//    }
+//    else if (positionX[boidId] + changePosX < 0)
+//    {
+//        // posiiton out of the window to the left
+//        positionX[boidId] = 0.1f;
+//        velocityX[boidId] = -velocityX[boidId];
+//    }
+//    else
+//    {
+//        positionX[boidId] += changePosX;
+//    }
+//
+//    float changePosY = velocityY[boidId] * deltaTime;
+//    if (positionY[boidId] + changePosY > screenHeight)
+//    {
+//        // position above the top of the window
+//        positionY[boidId] = screenHeight - 0.1f;
+//        velocityY[boidId] = -velocityY[boidId];
+//    }
+//    else if (positionY[boidId] + changePosY < 0)
+//    {
+//        // position below the bottom of the window
+//        positionY[boidId] = 0.1f;
+//        velocityY[boidId] = -velocityY[boidId];
+//    }
+//    else
+//    {
+//        positionY[boidId] += changePosY;
+//    }
+//}
 
 
 void Boids::updatePositionsAllBoids(float deltaTime, int screenWidth, int screenHeight)

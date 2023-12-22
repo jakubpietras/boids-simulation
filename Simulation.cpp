@@ -1,14 +1,13 @@
 #include "Simulation.h"
-#include "Boids.h"
-#include "SpatialGrid.h"
 
-Simulation::Simulation(Boids& boidsStruct, SpatialGrid& spatialGrid, float radius)
-	: separationFactor(0.5f),
-	alignmentFactor(0.5f),
-	cohesionFactor(0.05f),
+Simulation::Simulation(Boids& boidsStruct, SpatialGrid& spatialGrid, float radius, float visionAngle)
+	: separationFactor(1.5f),
+	alignmentFactor(0.8f),
+	cohesionFactor(1.5f),
 	maxSpeed(40.0f),
 	minSpeed(30.0f),
 	visionRadius(radius),
+	visionAngle(visionAngle),
 	grid(spatialGrid),
 	boids(boidsStruct)
 { }
@@ -21,8 +20,8 @@ void Simulation::runSimulationFrame(float deltaTime)
 	{
 		std::vector<int> nhoodBoids = grid.getBoidsFromRegion(grid.hashBoid(boids, i));
 		separation(nhoodBoids, i);
-		alignment(nhoodBoids, i);
 		cohesion(nhoodBoids, i);
+		alignment(nhoodBoids, i);
 	}
 }
 
@@ -41,6 +40,14 @@ void Simulation::separation(std::vector<int> nhoodBoids, int ownId)
 			yVecSum += (boids.positionY[ownId] - boids.positionY[boid]);
 		}
 	}
+
+	float norm = Helpers::vectorNorm(xVecSum, yVecSum);
+	if (norm != 0)
+	{
+		xVecSum /= norm;
+		yVecSum /= norm;
+	}
+
 	boids.updateVelocitySingle(xVecSum * separationFactor, yVecSum * separationFactor, ownId);
 }
 
@@ -49,46 +56,33 @@ void Simulation::alignment(std::vector<int> nhoodBoids, int ownId)
 	if (nhoodBoids.size() == 0)
 		return;
 
-	float xVecSum = 0, yVecSum = 0;
+	float xVelSum = 0, yVelSum = 0;
+	int boidCount = 0;
+	// Average of the velocities
 	for (auto boid : nhoodBoids)
 	{
 		if (isWithinFieldOfView(ownId, boid))
 		{
-			xVecSum += (boids.positionX[ownId] - boids.positionX[boid]);
-			yVecSum += (boids.positionY[ownId] - boids.positionY[boid]);
+			xVelSum += boids.velocityX[boid];
+			yVelSum += boids.velocityY[boid];
+			boidCount++;
 		}
 	}
-	xVecSum *= alignmentFactor;
-	yVecSum *= alignmentFactor;
+	xVelSum /= boidCount;
+	yVelSum /= boidCount;
 
-	boids.updateVelocitySingle(boids.velocityX[ownId] - xVecSum,
-		boids.velocityY[ownId] - yVecSum, ownId);
-}
-
-/* void Simulation::alignment2(std::vector<int> nhoodBoids, int ownId)
-{
-	if (nhoodBoids.size() == 0)
-		return;
-
-	float xVecSum = 0, yVecSum = 0;
-	int boidsNum = 0;
-	for (auto boid : nhoodBoids)
+	// Normalization
+	float norm = Helpers::vectorNorm(xVelSum, yVelSum);
+	if (norm != 0)
 	{
-		if (isWithinFieldOfView(ownId, boid))
-		{
-			xVecSum += (boids.positionX[ownId] - boids.positionX[boid]);
-			yVecSum += (boids.positionY[ownId] - boids.positionY[boid]);
-			boidsNum++;
-		}
+		xVelSum /= norm;
+		yVelSum /= norm;
 	}
 
-	xVecSum *= alignmentFactor / boidsNum;
-	yVecSum *= alignmentFactor / boidsNum;
-
-	boids.updateVelocitySingle(((xVecSum/boidsNum - boids.velocityX[ownId]) * alignmentFactor),
-		((yVecSum / boidsNum - boids.velocityY[ownId]) * alignmentFactor), ownId);
+	boids.updateVelocitySingle((xVelSum - boids.velocityX[ownId]) * alignmentFactor,
+		(yVelSum - boids.velocityY[ownId]) * alignmentFactor, ownId);
 }
-*/
+
 
 void Simulation::cohesion(std::vector<int> nhoodBoids, int ownId)
 {
@@ -109,31 +103,19 @@ void Simulation::cohesion(std::vector<int> nhoodBoids, int ownId)
 	xPosAvg /= boidsNum;
 	yPosAvg /= boidsNum;
 
-	boids.updateVelocitySingle((xPosAvg - boids.positionX[ownId]) * cohesionFactor,
-		(yPosAvg - boids.positionY[ownId]) * cohesionFactor, ownId);
+	float xNewVelocity = xPosAvg - boids.positionX[ownId];
+	float yNewVelocity = yPosAvg - boids.positionY[ownId];
+	float norm = Helpers::vectorNorm(xNewVelocity, yNewVelocity);
+	if (norm != 0)
+	{
+		xNewVelocity /= norm;
+		yNewVelocity /= norm;
+	}
+	
+	boids.updateVelocitySingle(xNewVelocity * cohesionFactor,
+		yNewVelocity * cohesionFactor, ownId);
 }
 
-//void Simulation::updateVelocity(float xVelocity, float yVelocity, int boidId)
-//{
-//	float xNewVelocity = boids.velocityX[boidId] + xVelocity;
-//	float yNewVelocity = boids.velocityY[boidId] + yVelocity;
-//
-//	float newSpeed = sqrt(xNewVelocity * xNewVelocity + yNewVelocity * yNewVelocity);
-//
-//	if (newSpeed > maxSpeed)
-//	{
-//		xNewVelocity *= (maxSpeed / newSpeed);
-//		yNewVelocity *= (maxSpeed / newSpeed);
-//	}
-//	if (newSpeed < minSpeed)
-//	{
-//		xNewVelocity *= (minSpeed / newSpeed);
-//		yNewVelocity *= (minSpeed / newSpeed);
-//	}
-//
-//	boids.velocityX[boidId] = xNewVelocity;
-//	boids.velocityY[boidId] = yNewVelocity;
-//}
 
 bool Simulation::isWithinRadius(int observerBoidId, int targetBoidId)
 {
@@ -149,32 +131,29 @@ bool Simulation::isWithinRadius(int observerBoidId, int targetBoidId)
 
 }
 
-//bool Simulation::isWithinConeOfVision(int observerBoidId, int targetBoidId)
-//{
-//	if (observerBoidId < 0 || observerBoidId >= boids.boidsNumber ||
-//		targetBoidId < 0 || targetBoidId >= boids.boidsNumber) {
-//		return false;
-//	}
-//
-//	// Get velocity vector of the observer boid
-//	float observerVelX = boids.velocityX[observerBoidId];
-//	float observerVelY = boids.velocityY[observerBoidId];
-//
-//	// Get vector from observer to target
-//	float toTargetX = boids.positionX[targetBoidId] - boids.positionX[observerBoidId];
-//	float toTargetY = boids.positionY[targetBoidId] - boids.positionY[observerBoidId];
-//
-//	// Calculate dot product
-//	float dotProduct = observerVelX * toTargetX + observerVelY * toTargetY;
-//
-//	// Calculate cosine of the cone angle
-//	float cosConeAngle = cos(visionAngle);
-//
-//	// Compare with the cosine of the cone angle
-//	return dotProduct > cosConeAngle;
-//}
-
-bool Simulation::isWithinFieldOfView(int observerBoidId, int targetBoidId)
+bool Simulation::isWithinVisionCone(int observerBoid, int targetBoid)
 {
-	return (isWithinRadius(observerBoidId, targetBoidId));
+	// Direction of observer boid is the same as its velocity direction
+	
+	// Vector from observer boid to the target boid
+	float xDistanceVec = boids.positionX[targetBoid] - boids.positionY[observerBoid];
+	float yDistanceVec = boids.positionY[targetBoid] - boids.positionY[observerBoid];
+
+	float dotProduct = xDistanceVec * boids.velocityX[observerBoid]
+		+ yDistanceVec * boids.velocityY[observerBoid];
+	float determinant = xDistanceVec * boids.velocityY[observerBoid]
+		- yDistanceVec * boids.velocityX[observerBoid];
+	
+	// Angle between the two boids
+	float angle = fabs(atan2f(determinant, dotProduct));
+
+	if (angle <= visionAngle)
+		return true;
+	return false;
+}
+
+bool Simulation::isWithinFieldOfView(int observerBoid, int targetBoid)
+{
+	return (isWithinRadius(observerBoid, targetBoid) 
+		&& isWithinVisionCone(observerBoid, targetBoid));
 }
