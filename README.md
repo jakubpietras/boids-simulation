@@ -20,10 +20,10 @@ Make sure you have the following installed on your system:
 
 ### Steps to Build and Run
 
-1. **Clone the Repository**:
+1. Clone the Repository:
    ```
-   git clone https://github.com/jakubpietras/boids-sim.git
-   cd boids-sim
+   git clone https://github.com/jakubpietras/boids-simulation.git
+   cd boids-simulation
    ```
 2. Create a Build directory
    ```
